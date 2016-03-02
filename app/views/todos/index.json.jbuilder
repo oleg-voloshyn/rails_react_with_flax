@@ -1,1 +1,1 @@
-json.todos @todos, partial: 'todos/todo', as: :todo
+json.todos todos, partial: 'todo', as: :todo

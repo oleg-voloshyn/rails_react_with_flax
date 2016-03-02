@@ -1,29 +1,22 @@
 class TodosController < ApplicationController
-  def index
-    @todos = Todo.all
-  end
+  expose(:todos) { Todo.all }
+  expose(:todo) { Todo.find_by(id: params[:id]) || Todo.new(todo_params) }
 
   def create
-    @todo = Todo.new(todo_params)
-    if @todo.save
-      render partial: 'todos/todo', locals: { todo: @todo }
-    else
-      render json: @todo.errors.to_json
-    end
+    todo_actions(todo.save)
   end
 
   def destroy
-    @todo = Todo.find(params[:id])
-    if @todo.update(checked: true)
-      render partial: 'todos/todo', locals: { todo: @todo }
-    else
-      render json: @todo.errors.to_json
-    end
+    todo_actions(todo.update(checked: true))
   end
 
   private
 
   def todo_params
-    params.require(:todo).permit(:name, :checked)
+    params.require(:todo).permit!
+  end
+
+  def todo_actions(action)
+    action ? (render partial: 'todo', locals: { todo: todo }) : (render json: todo.errors.to_json)
   end
 end
